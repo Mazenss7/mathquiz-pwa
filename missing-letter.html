@@ -5,10 +5,11 @@
   <title>لعبة الحرف الناقص</title>
   <style>
     body{font-family:Arial,sans-serif;text-align:center;background:#fff8ea;margin:0;padding:20px}
-    #welcome{max-width:500px;margin:60px auto;padding:20px;border:2px solid #2a9d8f;border-radius:12px;background:#fff;}
+    #welcome{max-width:500px;margin:60px auto;padding:20px;border:2px solid #2a9d8f;border-radius:12px;background:#fff}
     #welcome img{max-width:100%;border-radius:8px;margin-bottom:20px}
     #welcome button{padding:12px 24px;font-size:20px;border:none;background:#2a9d8f;color:#fff;border-radius:8px;cursor:pointer}
-    #game{display:none;max-width:400px;margin:40px auto;padding:20px;border:2px solid #f4a261;border-radius:12px;background:#fff}
+    #game{display:none;position:relative;max-width:400px;margin:40px auto;padding:20px;border:4px solid #000;border-radius:12px;background:#fff;transition:border-color 0.5s}
+    #cat{display:none;position:absolute;top:20px;left:-60px;font-size:48px;transition:left 1s linear;}
     #question{font-size:32px;color:#e76f51;margin-bottom:20px;transition:font-size 0.3s}
     button.choice{padding:10px 20px;font-size:20px;margin:8px;border:2px solid #2a9d8f;border-radius:8px;cursor:pointer;background:#e9c46a}
     button.choice:hover{background:#f4a261}
@@ -19,15 +20,14 @@
 </head>
 <body>
   <h1>لعبة الحرف الناقص</h1>
-  <!-- شاشة الترحيب -->
   <div id="welcome">
-    <h2>مرحباً بك في لعبة الحرف الناقص!</h2>
-<img src="welcome.png" alt="أهلاً" />
+    <h2>أهلا بك في لعبة الحرف الناقص!</h2>
+    <img src="https://raw.githubusercontent.com/Mazenss7/mathquiz-pwa/main/welcome.png" alt="أهلاً" />
     <p>هيا لنتعلم الكلمات معاً بطريقة ممتعة وسهلة!</p>
     <button id="startButton">ابدأ اللعب</button>
   </div>
-  <!-- منطقة اللعبة -->
   <div id="game">
+    <div id="cat">🐱</div>
     <div id="question"></div>
     <div id="options"></div>
     <div id="feedback"></div>
@@ -67,6 +67,14 @@
       {display:"زهر_", answer:"ة", options:["ة","ز","ه","ر"]},
       {display:"مكت_", answer:"ب", options:["ب","ت","ك","م"]}
     ];
+    // قائمة ألوان مختلفة لكل كلمة
+    const colors = [
+      '#e76f51','#2a9d8f','#f4a261','#264653','#e9c46a','#f4a261',
+      '#2a9d8f','#e76f51','#264653','#f4a261','#2a9d8f','#e9c46a',
+      '#264653','#2a9d8f','#e76f51','#e9c46a','#f4a261','#264653',
+      '#2a9c32','#e76f51','#2a9d8f','#264653','#f4a261','#e9c46a',
+      '#2a9d8f','#264653','#e76f51','#2a9d8f','#f4a261','#264653'
+    ];
     let current = 0, correct = 0;
     const order = questions.map((_,i)=>i).sort(()=>Math.random()-0.5);
 
@@ -75,6 +83,15 @@
     }
 
     function showQuestion(q){
+      // إخفاء القط قبل السؤال
+      const cat = document.getElementById('cat');
+      cat.style.display = 'none';
+
+      // تغيير لون الإطار وفق الكلمة الحالية
+      const gameDiv = document.getElementById('game');
+      const color = colors[order[current] % colors.length];
+      gameDiv.style.borderColor = color;
+
       document.getElementById('question').style.fontSize='32px';
       document.getElementById('question').textContent = q.display;
       document.getElementById('options').innerHTML = '';
@@ -84,18 +101,22 @@
         btn.onclick = () => {
           if(letter === q.answer){
             correct++;
+            // عرض الكلمة كاملة
             const fullWord = q.display.replace('_', q.answer);
             document.getElementById('question').style.fontSize='48px';
             document.getElementById('question').textContent = fullWord;
             document.getElementById('options').innerHTML = '';
             showFeedback('🎉 أحسنت! انقر التالي ►','green');
+            // عرض القط المتحرك
+            cat.style.display = 'block';
+            cat.style.left = '-60px';
+            setTimeout(()=>{ cat.style.left = '100%'; },100);
+            // زر التالي
             const nextDiv = document.getElementById('next-btn');
             nextDiv.innerHTML = '<button id="nextBtn">➡️ التالي</button>';
             nextDiv.style.display = 'block';
             document.getElementById('nextBtn').onclick = () => { nextDiv.style.display='none'; current++; startQuestion(); };
-          } else {
-            showFeedback('❌ للأسف خطأ، حاول مرة ثانية!', 'red');
-          }
+          } else { showFeedback('❌ للأسف خطأ، حاول مرة ثانية!', 'red'); }
         };
         document.getElementById('options').appendChild(btn);
       });
