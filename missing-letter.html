@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>لعبة الحرف الناقص</title>
+  <style>
+    body{font-family:Arial,sans-serif;text-align:center;background:#fff8ea;margin:0;padding:20px}
+    #game{max-width:400px;margin:40px auto;padding:20px;border:2px solid #f4a261;border-radius:12px;background:#fff}
+    #question{font-size:32px;color:#e76f51;margin-bottom:20px;transition:font-size 0.3s}
+    button{padding:10px 20px;font-size:20px;margin:8px;border:2px solid #2a9d8f;border-radius:8px;cursor:pointer;background:#e9c46a}
+    button:hover{background:#f4a261}
+    #feedback{font-size:24px;margin:15px 0;height:30px}
+    #score{font-size:20px;color:#264653;margin-top:10px}
+    #next-btn button{font-size:24px;padding:10px 20px;border:none;background:transparent;cursor:pointer}
+  </style>
+</head>
+<body>
+  <h1>لعبة الحرف الناقص</h1>
+  <div id="game">
+    <div id="question"></div>
+    <div id="options"></div>
+    <div id="feedback"></div>
+    <div id="score"></div>
+    <div id="next-btn" style="display:none;margin-top:20px;"></div>
+  </div>
+  <script>
+    const questions = [
+      {display:"كت_ب", answer:"ا", options:["ا","ت","م","ن"]},
+      {display:"مد_سة", answer:"ر", options:["ر","د","س","م"]},
+      {display:"ناف_ذة", answer:"ذ", options:["ذ","ف","ن","ح"]},
+      {display:"س_ارة", answer:"ي", options:["ي","ش","ر","س"]},
+      {display:"ق_ة", answer:"ط", options:["ط","ه","ك","ق"]},
+      {display:"شجر_", answer:"ة", options:["ة","ر","ى","و"]},
+      {display:"جري_ة", answer:"د", options:["د","ر","ي","ج"]},
+      {display:"مط_خ", answer:"ب", options:["ب","ط","خ","م"]},
+      {display:"حقي_ة", answer:"ب", options:["ب","ق","ي","ح"]},
+      {display:"لعب_ة", answer:"ة", options:["ة","ع","ل","ب"]},
+      {display:"مف_اح", answer:"ت", options:["ت","ف","م","ح"]},
+      {display:"مط_م", answer:"ع", options:["ع","ط","م","ب"]},
+      {display:"ها_ف", answer:"ت", options:["ت","ف","ه","ا"]},
+      {display:"جز_رة", answer:"ي", options:["ي","ز","ر","ج"]},
+      {display:"طائ_ة", answer:"ر", options:["ر","ط","ا","ع"]},
+      {display:"فاكه_", answer:"ة", options:["ة","ك","ف","ه"]},
+      {display:"سم_كة", answer:"ك", options:["ك","م","س","ه"]},
+      {display:"ق_م", answer:"ل", options:["ل","ق","م","ا"]},
+      {display:"ور_ة", answer:"ق", options:["ق","ر","ة","و"]},
+      {display:"نعام_", answer:"ة", options:["ة","ن","ع","م"]},
+      {display:"ج_ل", answer:"ب", options:["ب","ج","ل","ا"]},
+      {display:"بحير_", answer:"ة", options:["ة","ب","ح","ي"]},
+      {display:"شاط_ئ", answer:"ئ", options:["ئ","ش","ا","ط"]},
+      {display:"تفاح_", answer:"ة", options:["ة","ح","ف","ت"]},
+      {display:"مو_ة", answer:"ز", options:["ز","م","و","ة"]},
+      {display:"برتقا_ة", answer:"ل", options:["ل","ر","ت","ق"]},
+      {display:"سا_ة", answer:"ع", options:["ع","س","ا","ة"]},
+      {display:"حاسو_", answer:"ب", options:["ب","و","س","ح"]},
+      {display:"زهر_", answer:"ة", options:["ة","ز","ه","ر"]},
+      {display:"مكت_", answer:"ب", options:["ب","ت","ك","م"]}
+    ];
+    let current = 0, correct = 0;
+    const order = questions.map((_,i)=>i).sort(()=>Math.random()-0.5);
+
+    function showFeedback(msg,color){
+      const fb = document.getElementById('feedback'); fb.textContent = msg; fb.style.color = color;
+    }
+
+    function showQuestion(q){
+      document.getElementById('question').style.fontSize='32px'; document.getElementById('question').textContent = q.display;
+      document.getElementById('options').innerHTML = ''; document.getElementById('next-btn').style.display='none';
+      q.options.sort(()=>Math.random()-0.5).forEach(letter => {
+        const btn = document.createElement('button'); btn.textContent = letter;
+        btn.onclick = () => {
+          if(letter === q.answer){
+            correct++;
+            const fullWord = q.display.replace('_', q.answer);
+            document.getElementById('question').style.fontSize='48px'; document.getElementById('question').textContent = fullWord;
+            document.getElementById('options').innerHTML = '';
+            showFeedback('🎉 أحسنت! انقر التالي ►','green');
+            const nextDiv = document.getElementById('next-btn'); nextDiv.innerHTML = '<button id="nextBtn">➡️ التالي</button>';
+            nextDiv.style.display = 'block'; document.getElementById('nextBtn').onclick = () => { nextDiv.style.display='none'; startQuestion(); };
+          } else { showFeedback('❌ للأسف خطأ، حاول مرة ثانية!', 'red'); }
+        };
+        document.getElementById('options').appendChild(btn);
+      });
+      document.getElementById('score').textContent = `السؤال ${current+1} من ${order.length}`; showFeedback('', '');
+    }
+
+    function startQuestion(){
+      if(current >= order.length){
+        document.getElementById('question').textContent = 'انتهت اللعبة!'; document.getElementById('options').innerHTML = '';
+        showFeedback(`🏆 نتيجتك: ${correct} من ${order.length}`, '#264653'); document.getElementById('score').textContent = '';
+        document.getElementById('next-btn').style.display='none'; return;
+      }
+      const q = questions[order[current]];
+      const fullWord = q.display.replace('_', q.answer);
+      document.getElementById('question').style.fontSize='32px'; document.getElementById('question').textContent = fullWord;
+      document.getElementById('options').innerHTML=''; showFeedback('📖 شاهد الكلمة كاملة', '#2a9d8f');
+      setTimeout(() => { showQuestion(q); }, 5000);
+    }
+
+    startQuestion();
+  </script>
+</body>
+</html>
