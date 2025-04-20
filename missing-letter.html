@@ -5,10 +5,13 @@
   <title>لعبة الحرف الناقص</title>
   <style>
     body{font-family:Arial,sans-serif;text-align:center;background:#fff8ea;margin:0;padding:20px}
-    #game{max-width:400px;margin:40px auto;padding:20px;border:2px solid #f4a261;border-radius:12px;background:#fff}
+    #welcome{max-width:500px;margin:60px auto;padding:20px;border:2px solid #2a9d8f;border-radius:12px;background:#fff;}
+    #welcome img{max-width:100%;border-radius:8px;margin-bottom:20px}
+    #welcome button{padding:12px 24px;font-size:20px;border:none;background:#2a9d8f;color:#fff;border-radius:8px;cursor:pointer}
+    #game{display:none;max-width:400px;margin:40px auto;padding:20px;border:2px solid #f4a261;border-radius:12px;background:#fff}
     #question{font-size:32px;color:#e76f51;margin-bottom:20px;transition:font-size 0.3s}
-    button{padding:10px 20px;font-size:20px;margin:8px;border:2px solid #2a9d8f;border-radius:8px;cursor:pointer;background:#e9c46a}
-    button:hover{background:#f4a261}
+    button.choice{padding:10px 20px;font-size:20px;margin:8px;border:2px solid #2a9d8f;border-radius:8px;cursor:pointer;background:#e9c46a}
+    button.choice:hover{background:#f4a261}
     #feedback{font-size:24px;margin:15px 0;height:30px}
     #score{font-size:20px;color:#264653;margin-top:10px}
     #next-btn button{font-size:24px;padding:10px 20px;border:none;background:transparent;cursor:pointer}
@@ -16,6 +19,14 @@
 </head>
 <body>
   <h1>لعبة الحرف الناقص</h1>
+  <!-- شاشة الترحيب -->
+  <div id="welcome">
+    <h2>مرحباً بك في لعبة الحرف الناقص!</h2>
+    <img src="https://i.imgur.com/4AiXzf8.png" alt="أهلاً" />
+    <p>هيا لنتعلم الكلمات معاً بطريقة ممتعة وسهلة!</p>
+    <button id="startButton">ابدأ اللعب</button>
+  </div>
+  <!-- منطقة اللعبة -->
   <div id="game">
     <div id="question"></div>
     <div id="options"></div>
@@ -64,40 +75,51 @@
     }
 
     function showQuestion(q){
-      document.getElementById('question').style.fontSize='32px'; document.getElementById('question').textContent = q.display;
-      document.getElementById('options').innerHTML = ''; document.getElementById('next-btn').style.display='none';
+      document.getElementById('question').style.fontSize='32px';
+      document.getElementById('question').textContent = q.display;
+      document.getElementById('options').innerHTML = '';
+      document.getElementById('next-btn').style.display = 'none';
       q.options.sort(()=>Math.random()-0.5).forEach(letter => {
-        const btn = document.createElement('button'); btn.textContent = letter;
+        const btn = document.createElement('button'); btn.className='choice'; btn.textContent = letter;
         btn.onclick = () => {
           if(letter === q.answer){
             correct++;
             const fullWord = q.display.replace('_', q.answer);
-            document.getElementById('question').style.fontSize='48px'; document.getElementById('question').textContent = fullWord;
+            document.getElementById('question').style.fontSize='48px';
+            document.getElementById('question').textContent = fullWord;
             document.getElementById('options').innerHTML = '';
             showFeedback('🎉 أحسنت! انقر التالي ►','green');
-            const nextDiv = document.getElementById('next-btn'); nextDiv.innerHTML = '<button id="nextBtn">➡️ التالي</button>';
-            nextDiv.style.display = 'block'; document.getElementById('nextBtn').onclick = () => { nextDiv.style.display='none'; startQuestion(); };
-          } else { showFeedback('❌ للأسف خطأ، حاول مرة ثانية!', 'red'); }
+            const nextDiv = document.getElementById('next-btn');
+            nextDiv.innerHTML = '<button id="nextBtn">➡️ التالي</button>';
+            nextDiv.style.display = 'block';
+            document.getElementById('nextBtn').onclick = () => { nextDiv.style.display='none'; current++; startQuestion(); };
+          } else {
+            showFeedback('❌ للأسف خطأ، حاول مرة ثانية!', 'red');
+          }
         };
         document.getElementById('options').appendChild(btn);
       });
-      document.getElementById('score').textContent = `السؤال ${current+1} من ${order.length}`; showFeedback('', '');
+      document.getElementById('score').textContent = `السؤال ${current+1} من ${order.length}`;
     }
 
     function startQuestion(){
+      document.getElementById('welcome').style.display='none';
+      document.getElementById('game').style.display='block';
       if(current >= order.length){
-        document.getElementById('question').textContent = 'انتهت اللعبة!'; document.getElementById('options').innerHTML = '';
-        showFeedback(`🏆 نتيجتك: ${correct} من ${order.length}`, '#264653'); document.getElementById('score').textContent = '';
-        document.getElementById('next-btn').style.display='none'; return;
+        document.getElementById('question').textContent = 'انتهت اللعبة!';
+        document.getElementById('options').innerHTML = '';
+        showFeedback(`🏆 نتيجتك: ${correct} من ${order.length}`, '#264653');
+        document.getElementById('score').textContent = '';
+        document.getElementById('next-btn').style.display='none';
+        return;
       }
       const q = questions[order[current]];
-      const fullWord = q.display.replace('_', q.answer);
-      document.getElementById('question').style.fontSize='32px'; document.getElementById('question').textContent = fullWord;
-      document.getElementById('options').innerHTML=''; showFeedback('📖 شاهد الكلمة كاملة', '#2a9d8f');
-      setTimeout(() => { showQuestion(q); }, 5000);
+      showQuestion(q);
     }
 
-    startQuestion();
+    // ربط زر البدء
+    document.getElementById('startButton').onclick = () => { startQuestion(); };
   </script>
 </body>
 </html>
+
