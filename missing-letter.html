@@ -8,8 +8,7 @@
     #welcome{max-width:500px;margin:60px auto;padding:20px;border:2px solid #2a9d8f;border-radius:12px;background:#fff}
     #welcome img{max-width:100%;border-radius:8px;margin-bottom:20px}
     #welcome button{padding:12px 24px;font-size:20px;border:none;background:#2a9d8f;color:#fff;border-radius:8px;cursor:pointer}
-    #game{display:none;position:relative;max-width:400px;margin:40px auto;padding:20px;border:4px solid #000;border-radius:12px;background:#fff;transition:border-color 0.5s}
-    #cat{display:none;position:absolute;top:20px;left:-60px;font-size:48px;transition:left 1s linear;}
+    #game{display:none;max-width:400px;margin:40px auto;padding:20px;border:4px solid #000;border-radius:12px;background:#fff;transition:border-color 0.5s}
     #question{font-size:32px;color:#e76f51;margin-bottom:20px;transition:font-size 0.3s}
     button.choice{padding:10px 20px;font-size:20px;margin:8px;border:2px solid #2a9d8f;border-radius:8px;cursor:pointer;background:#e9c46a}
     button.choice:hover{background:#f4a261}
@@ -27,7 +26,6 @@
     <button id="startButton">ابدأ اللعب</button>
   </div>
   <div id="game">
-    <div id="cat">🐱</div>
     <div id="question"></div>
     <div id="options"></div>
     <div id="feedback"></div>
@@ -83,10 +81,6 @@
     }
 
     function showQuestion(q){
-      // إخفاء القط قبل السؤال
-      const cat = document.getElementById('cat');
-      cat.style.display = 'none';
-
       // تغيير لون الإطار وفق الكلمة الحالية
       const gameDiv = document.getElementById('game');
       const color = colors[order[current] % colors.length];
@@ -107,15 +101,9 @@
             document.getElementById('question').textContent = fullWord;
             document.getElementById('options').innerHTML = '';
             showFeedback('🎉 أحسنت! انقر التالي ►','green');
-            // عرض القط المتحرك
-            cat.style.display = 'block';
-            cat.style.left = '-60px';
-            setTimeout(()=>{ cat.style.left = '100%'; },100);
             // زر التالي
-            const nextDiv = document.getElementById('next-btn');
-            nextDiv.innerHTML = '<button id="nextBtn">➡️ التالي</button>';
-            nextDiv.style.display = 'block';
-            document.getElementById('nextBtn').onclick = () => { nextDiv.style.display='none'; current++; startQuestion(); };
+            const nextDiv = document.getElementById('next-btn'); nextDiv.innerHTML = '<button id="nextBtn">➡️ التالي</button>';
+            nextDiv.style.display = 'block'; document.getElementById('nextBtn').onclick = () => { nextDiv.style.display='none'; current++; startQuestion(); };
           } else { showFeedback('❌ للأسف خطأ، حاول مرة ثانية!', 'red'); }
         };
         document.getElementById('options').appendChild(btn);
@@ -127,12 +115,9 @@
       document.getElementById('welcome').style.display='none';
       document.getElementById('game').style.display='block';
       if(current >= order.length){
-        document.getElementById('question').textContent = 'انتهت اللعبة!';
-        document.getElementById('options').innerHTML = '';
-        showFeedback(`🏆 نتيجتك: ${correct} من ${order.length}`, '#264653');
-        document.getElementById('score').textContent = '';
-        document.getElementById('next-btn').style.display='none';
-        return;
+        document.getElementById('question').textContent = 'انتهت اللعبة!'; document.getElementById('options').innerHTML = '';
+        showFeedback(`🏆 نتيجتك: ${correct} من ${order.length}`, '#264653'); document.getElementById('score').textContent = '';
+        document.getElementById('next-btn').style.display='none'; return;
       }
       const q = questions[order[current]];
       showQuestion(q);
@@ -143,4 +128,5 @@
   </script>
 </body>
 </html>
+
 Mazen Alsurayhi AI Course
